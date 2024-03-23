@@ -10,9 +10,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "books")
 public class Book {
 
@@ -23,5 +21,6 @@ public class Book {
     private String author;
     private String isbn;
     private Integer quantity;
+
 
 }

@@ -49,15 +49,16 @@ public class BookService {
     public Book update(BookDto dto, UUID id) {
         Book oldBook = getById(id);
 
-        Book updatedBook = Book.builder()
-                .title(dto.getTitle() != null ? dto.getTitle() : oldBook.getTitle())
-                .author(dto.getAuthor() != null ? dto.getAuthor() : oldBook.getAuthor())
-                .isbn(dto.getIsbn() != null ? dto.getIsbn() : oldBook.getIsbn())
-                .quantity(dto.getQuantity() != null ? dto.getQuantity() : oldBook.getQuantity())
-                .build();
+        Book updatedBook = new Book();
+        updatedBook.setTitle(dto.getTitle() != null ? dto.getTitle() : oldBook.getTitle());
+        updatedBook.setAuthor(dto.getAuthor() != null ? dto.getAuthor() : oldBook.getAuthor());
+        updatedBook.setIsbn(dto.getIsbn() != null ? dto.getIsbn() : oldBook.getIsbn());
+        updatedBook.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : oldBook.getQuantity());
 
+        Book book = repository.save(updatedBook);
+        if (book == null) throw new BookNotSavedException();
 
-        return save(mapper.toDto(updatedBook));
+        return book;
     }
 
 }

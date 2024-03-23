@@ -15,12 +15,13 @@ public class BookMapperTest {
     @Autowired
     private BookMapper mapper;
 
+    private final UUID testUUID = UUID.randomUUID();
 
     @Test
     void shouldProperlyMapEntityToDto() {
 
         Book book = new Book();
-        book.setId(UUID.randomUUID());
+        book.setId(testUUID);
         book.setTitle("Correct Title");
 
         BookDto dto = mapper.toDto(book);
@@ -35,7 +36,7 @@ public class BookMapperTest {
     void shouldProperlyMapDtoToEntity() {
 
         BookDto dto = new BookDto();
-        dto.setId(UUID.randomUUID());
+        dto.setId(testUUID);
         dto.setTitle("Correct Title");
 
         Book book = mapper.toEntity(dto);
