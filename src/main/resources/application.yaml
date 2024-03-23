@@ -4,8 +4,5 @@ spring:
     username: postgres
     password: root
 
-  flyway:
-    locations: classpath:db.migration
-
 server:
   port: 8080
