@@ -21,7 +21,14 @@ repositories {
 	mavenCentral()
 }
 
+val mapstructVersion = "1.5.5.Final"
+val lombokMapstructBindingVersion = "0.2.0"
+
 dependencies {
+	implementation("org.mapstruct:mapstruct:$mapstructVersion")
+	annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+	implementation("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
+
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.flywaydb:flyway-core")
