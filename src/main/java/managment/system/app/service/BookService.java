@@ -20,7 +20,6 @@ import java.util.UUID;
 public class BookService {
 
     private final BookRepository repository;
-    public final BookMapper mapper;
 
     public List<Book> getAll() {
         return repository.findAll();
@@ -33,7 +32,7 @@ public class BookService {
 
     @Transactional
     public Book save(BookDto dto) {
-        Book book = repository.save(mapper.toEntity(dto));
+        Book book = repository.save(BookMapper.mapper.toEntity(dto));
         if (book == null) throw new BookNotSavedException();
 
         return book;
@@ -48,17 +47,12 @@ public class BookService {
     @Transactional
     public Book update(BookDto dto, UUID id) {
         Book oldBook = getById(id);
+        oldBook.setTitle(dto.getTitle() != null ? dto.getTitle() : oldBook.getTitle());
+        oldBook.setAuthor(dto.getAuthor() != null ? dto.getAuthor() : oldBook.getAuthor());
+        oldBook.setIsbn(dto.getIsbn() != null ? dto.getIsbn() : oldBook.getIsbn());
+        oldBook.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : oldBook.getQuantity());
 
-        Book updatedBook = new Book();
-        updatedBook.setTitle(dto.getTitle() != null ? dto.getTitle() : oldBook.getTitle());
-        updatedBook.setAuthor(dto.getAuthor() != null ? dto.getAuthor() : oldBook.getAuthor());
-        updatedBook.setIsbn(dto.getIsbn() != null ? dto.getIsbn() : oldBook.getIsbn());
-        updatedBook.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : oldBook.getQuantity());
-
-        Book book = repository.save(updatedBook);
-        if (book == null) throw new BookNotSavedException();
-
-        return book;
+        return save(BookMapper.mapper.toDto(oldBook));
     }
 
 }

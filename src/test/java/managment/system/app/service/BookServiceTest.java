@@ -25,9 +25,6 @@ public class BookServiceTest {
     @Mock
     public BookRepository repository;
 
-    @Mock
-    private BookMapper mapper;
-
     @InjectMocks
     public BookService service;
 
@@ -78,7 +75,6 @@ public class BookServiceTest {
     @Test
     void shouldProperlySaveEntity() {
 
-        when(mapper.toEntity(any(BookDto.class))).thenReturn(defaultBook);
         when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Book book = service.save(defaultDto);

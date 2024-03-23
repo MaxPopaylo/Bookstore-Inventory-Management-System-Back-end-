@@ -4,16 +4,12 @@ import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
 @SpringBootTest
 public class BookMapperTest {
-
-    @Autowired
-    private BookMapper mapper;
 
     private final UUID testUUID = UUID.randomUUID();
 
@@ -24,7 +20,7 @@ public class BookMapperTest {
         book.setId(testUUID);
         book.setTitle("Correct Title");
 
-        BookDto dto = mapper.toDto(book);
+        BookDto dto = BookMapper.mapper.toDto(book);
 
         Assertions.assertNotNull(dto);
         Assertions.assertEquals(dto.getId(), book.getId());
@@ -39,7 +35,7 @@ public class BookMapperTest {
         dto.setId(testUUID);
         dto.setTitle("Correct Title");
 
-        Book book = mapper.toEntity(dto);
+        Book book = BookMapper.mapper.toEntity(dto);
 
         Assertions.assertNotNull(book);
         Assertions.assertEquals(book.getId(), dto.getId());
