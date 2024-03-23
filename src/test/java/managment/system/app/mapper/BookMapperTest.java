@@ -13,7 +13,7 @@ import java.util.UUID;
 public class BookMapperTest {
 
     @Autowired
-    private BookMapper bookMapper;
+    private BookMapper mapper;
 
 
     @Test
@@ -23,7 +23,7 @@ public class BookMapperTest {
         book.setId(UUID.randomUUID());
         book.setTitle("Correct Title");
 
-        BookDto dto = bookMapper.toDto(book);
+        BookDto dto = mapper.toDto(book);
 
         Assertions.assertNotNull(dto);
         Assertions.assertEquals(dto.getId(), book.getId());
@@ -38,7 +38,7 @@ public class BookMapperTest {
         dto.setId(UUID.randomUUID());
         dto.setTitle("Correct Title");
 
-        Book book = bookMapper.toEntity(dto);
+        Book book = mapper.toEntity(dto);
 
         Assertions.assertNotNull(book);
         Assertions.assertEquals(book.getId(), dto.getId());
