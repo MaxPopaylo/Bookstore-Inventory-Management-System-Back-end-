@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5444/book_store_db
+    username: postgres
+    password: root
+
+  flyway:
+    locations: classpath:db.migration
+
+server:
+  port: 8080
