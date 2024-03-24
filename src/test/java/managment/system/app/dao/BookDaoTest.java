@@ -1,6 +1,6 @@
 package managment.system.app.dao;
 
-import managment.system.app.dto.BookRequestDto;
+import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import managment.system.app.reporitory.BookRepository;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +33,7 @@ public class BookDaoTest {
     }
 
     private final Book defaultBook = new Book();
-    private final BookRequestDto defaultDto = new BookRequestDto();
+    private final BookDto defaultDto = new BookDto();
     private final UUID bookUUID = UUID.randomUUID();
 
     @BeforeEach
@@ -96,7 +96,7 @@ public class BookDaoTest {
     @Test
     void shouldProperlyUpdateEntity() {
 
-        BookRequestDto dto = new BookRequestDto();
+        BookDto dto = new BookDto();
         dto.setTitle("New Title");
         dto.setAuthor("New Author");
 

@@ -1,7 +1,7 @@
 package managment.system.app.dao;
 
 import lombok.RequiredArgsConstructor;
-import managment.system.app.dto.BookRequestDto;
+import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import managment.system.app.mapper.BookMapper;
 import managment.system.app.reporitory.BookRepository;
@@ -31,8 +31,8 @@ public class BookDao {
     }
 
     @Transactional
-    public Book save(BookRequestDto dto) {
-        Book book = repository.save(BookMapper.mapper.toEntityFromRequest(dto));
+    public Book save(BookDto dto) {
+        Book book = repository.save(BookMapper.mapper.toEntity(dto));
         if (book == null) throw new BookNotSavedException();
 
         return book;
@@ -45,14 +45,14 @@ public class BookDao {
     }
 
     @Transactional
-    public Book update(BookRequestDto dto, UUID id) {
+    public Book update(BookDto dto, UUID id) {
         Book oldBook = getById(id);
         oldBook.setTitle(dto.getTitle() != null ? dto.getTitle() : oldBook.getTitle());
         oldBook.setAuthor(dto.getAuthor() != null ? dto.getAuthor() : oldBook.getAuthor());
         oldBook.setIsbn(dto.getIsbn() != null ? dto.getIsbn() : oldBook.getIsbn());
         oldBook.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : oldBook.getQuantity());
 
-        return save(BookMapper.mapper.toRequestDto(oldBook));
+        return save(BookMapper.mapper.toDto(oldBook));
     }
 
 }

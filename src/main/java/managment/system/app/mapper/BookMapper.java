@@ -1,7 +1,6 @@
 package managment.system.app.mapper;
 
-import managment.system.app.dto.BookRequestDto;
-import managment.system.app.dto.BookResponseDto;
+import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,10 +11,8 @@ public interface BookMapper {
 
     BookMapper mapper = Mappers.getMapper( BookMapper.class );
 
-    BookRequestDto toRequestDto(Book book);
-    BookResponseDto toResponseDto(Book book);
+    BookDto toDto(Book book);
 
     @Mapping(target = "id", ignore = true)
-    Book toEntityFromRequest(BookRequestDto dto);
-    Book toEntityFromResponse(BookResponseDto dto);
+    Book toEntity(BookDto dto);
 }
