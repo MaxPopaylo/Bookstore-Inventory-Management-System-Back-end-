@@ -1,8 +1,7 @@
-package managment.system.app.service;
+package managment.system.app.dao;
 
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
-import managment.system.app.mapper.BookMapper;
 import managment.system.app.reporitory.BookRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,13 +19,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
-public class BookServiceTest {
+public class BookDaoTest {
 
     @Mock
     public BookRepository repository;
 
     @InjectMocks
-    public BookService service;
+    public BookDao dao;
 
     @BeforeEach
     public void setup() {
@@ -51,7 +50,7 @@ public class BookServiceTest {
 
         when(repository.findAll()).thenReturn(singletonList(defaultBook));
 
-        List<Book> books = service.getAll();
+        List<Book> books = dao.getAll();
 
         Assertions.assertEquals(1, books.size());
         Assertions.assertEquals(books.get(0).getId(), defaultBook.getId());
@@ -64,7 +63,7 @@ public class BookServiceTest {
 
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
 
-        Book book = service.getById(bookUUID);
+        Book book = dao.getById(bookUUID);
 
         Assertions.assertNotNull(book);
         Assertions.assertEquals(book.getId(), defaultBook.getId());
@@ -77,7 +76,7 @@ public class BookServiceTest {
 
         when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Book book = service.save(defaultDto);
+        Book book = dao.save(defaultDto);
 
         verify(repository, times(1)).save(any(Book.class));
 
@@ -90,7 +89,7 @@ public class BookServiceTest {
     void shouldProperlyDeleteEntity() {
 
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
-        service.delete(bookUUID);
+        dao.delete(bookUUID);
 
         verify(repository, times(1)).delete(any(Book.class));
 
@@ -106,7 +105,7 @@ public class BookServiceTest {
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
         when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Book book = service.update(dto, bookUUID);
+        Book book = dao.update(dto, bookUUID);
 
         verify(repository, times(1)).save(any(Book.class));
 

@@ -1,4 +1,4 @@
-package managment.system.app.service;
+package managment.system.app.dao;
 
 import lombok.RequiredArgsConstructor;
 import managment.system.app.dto.BookDto;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class BookService {
+public class BookDao {
 
     private final BookRepository repository;
 
