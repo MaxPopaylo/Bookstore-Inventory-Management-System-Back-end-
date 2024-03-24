@@ -1,6 +1,8 @@
 syntax = "proto3";
 package app.grpc.book;
 
+import "google/protobuf/empty.proto";
+
 message UUID {
   string value = 1;
 }
@@ -14,14 +16,12 @@ message Book {
 }
 
 message BookDTO {
-  UUID id = 1;
   string title = 2;
   string author = 3;
   string isbn = 4;
   int32 quantity = 5;
 }
 
-message getAllRequest {}
 message getAllResponse {
   repeated Book book = 1;
 }
@@ -43,7 +43,6 @@ message saveResponse {
 message deleteRequest {
   UUID id = 1;
 }
-message deleteResponse {}
 
 message updateRequest {
   BookDTO dto = 1;
@@ -54,9 +53,9 @@ message updateResponse {
 }
 
 service BookService {
-  rpc getAll (getAllRequest) returns (getAllResponse);
+  rpc getAll (google.protobuf.Empty) returns (getAllResponse);
   rpc getById (getByIdRequest) returns (getByIdResponse);
   rpc save (saveRequest) returns (saveResponse);
-  rpc delete (deleteRequest) returns (deleteResponse);
+  rpc delete (deleteRequest) returns (google.protobuf.Empty);
   rpc update (updateRequest) returns (updateResponse);
 }

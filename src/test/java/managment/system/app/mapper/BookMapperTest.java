@@ -1,5 +1,6 @@
 package managment.system.app.mapper;
 
+import app.grpc.book.BookOuterClass;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import org.junit.jupiter.api.Assertions;
@@ -34,6 +35,45 @@ public class BookMapperTest {
 
         Assertions.assertNotNull(book);
         Assertions.assertEquals(book.getTitle(), dto.getTitle());
+
+    }
+
+    @Test
+    void shouldProperlyMapEntityToProtoEntity() {
+
+        Book book = new Book();
+        book.setId(UUID.randomUUID());
+        book.setTitle("Correct Title");
+        book.setAuthor("Correct Author");
+        book.setIsbn("Isbn");
+        book.setQuantity(1);
+
+        BookOuterClass.Book protoBook = BookMapper.mapper.toProtoEntity(book);
+
+        Assertions.assertNotNull(book);
+        Assertions.assertEquals(book.getTitle(), protoBook.getTitle());
+        Assertions.assertEquals(book.getAuthor(), protoBook.getAuthor());
+        Assertions.assertEquals(book.getIsbn(), protoBook.getIsbn());
+        Assertions.assertEquals(book.getQuantity(), protoBook.getQuantity());
+
+    }
+
+    @Test
+    void shouldProperlyMapDtoToProtoDto() {
+
+        BookDto dto = new BookDto();
+        dto.setTitle("Correct Title");
+        dto.setAuthor("Correct Author");
+        dto.setIsbn("Isbn");
+        dto.setQuantity(1);
+
+        BookOuterClass.BookDTO protoDto = BookMapper.mapper.toProtoDto(dto);
+
+        Assertions.assertNotNull(dto);
+        Assertions.assertEquals(dto.getTitle(), protoDto.getTitle());
+        Assertions.assertEquals(dto.getAuthor(), protoDto.getAuthor());
+        Assertions.assertEquals(dto.getIsbn(), protoDto.getIsbn());
+        Assertions.assertEquals(dto.getQuantity(), protoDto.getQuantity());
 
     }
 
