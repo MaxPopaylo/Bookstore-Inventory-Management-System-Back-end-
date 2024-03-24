@@ -2,12 +2,9 @@ package managment.system.app.dto;
 
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
-public class BookDto {
+public class BookRequestDto {
 
-    private UUID id;
     private String title;
     private String author;
     private String isbn;

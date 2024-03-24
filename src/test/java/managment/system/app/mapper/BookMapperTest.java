@@ -1,6 +1,6 @@
 package managment.system.app.mapper;
 
-import managment.system.app.dto.BookDto;
+import managment.system.app.dto.BookResponseDto;
 import managment.system.app.entity.Book;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,13 +14,13 @@ public class BookMapperTest {
     private final UUID testUUID = UUID.randomUUID();
 
     @Test
-    void shouldProperlyMapEntityToDto() {
+    void shouldProperlyMapEntityToResponseDto() {
 
         Book book = new Book();
         book.setId(testUUID);
         book.setTitle("Correct Title");
 
-        BookDto dto = BookMapper.mapper.toDto(book);
+        BookResponseDto dto = BookMapper.mapper.toResponseDto(book);
 
         Assertions.assertNotNull(dto);
         Assertions.assertEquals(dto.getId(), book.getId());
@@ -29,13 +29,13 @@ public class BookMapperTest {
     }
 
     @Test
-    void shouldProperlyMapDtoToEntity() {
+    void shouldProperlyMapResponseDtoToEntity() {
 
-        BookDto dto = new BookDto();
+        BookResponseDto dto = new BookResponseDto();
         dto.setId(testUUID);
         dto.setTitle("Correct Title");
 
-        Book book = BookMapper.mapper.toEntity(dto);
+        Book book = BookMapper.mapper.toEntityFromResponse(dto);
 
         Assertions.assertNotNull(book);
         Assertions.assertEquals(book.getId(), dto.getId());
