@@ -1,0 +1,62 @@
+syntax = "proto3";
+package app.grpc.book;
+
+message UUID {
+  string value = 1;
+}
+
+message Book {
+  UUID id = 1;
+  string title = 2;
+  string author = 3;
+  string isbn = 4;
+  int32 quantity = 5;
+}
+
+message BookDTO {
+  UUID id = 1;
+  string title = 2;
+  string author = 3;
+  string isbn = 4;
+  int32 quantity = 5;
+}
+
+message getAllRequest {}
+message getAllResponse {
+  repeated Book book = 1;
+}
+
+message getByIdRequest {
+  UUID id = 1;
+}
+message getByIdResponse {
+  Book book = 1;
+}
+
+message saveRequest {
+  BookDTO dto = 1;
+}
+message saveResponse {
+  Book book = 1;
+}
+
+message deleteRequest {
+  UUID id = 1;
+}
+message deleteResponse {}
+
+message updateRequest {
+  BookDTO dto = 1;
+  UUID id = 2;
+}
+message updateResponse {
+  Book book = 1;
+}
+
+service BookService {
+  rpc getAll (getAllRequest) returns (getAllResponse);
+  rpc getById (getByIdRequest) returns (getByIdResponse);
+  rpc save (saveRequest) returns (saveResponse);
+  rpc delete (deleteRequest) returns (deleteResponse);
+  rpc update (updateRequest) returns (updateResponse);
+}

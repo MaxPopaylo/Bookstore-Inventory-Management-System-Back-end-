@@ -45,17 +45,23 @@ repositories {
 
 val mapstructVersion = "1.5.5.Final"
 val lombokMapstructBindingVersion = "0.2.0"
+val grpcVersion = "1.62.2"
+val tomcatAnnotationsVersion = "6.0.53"
+val springBootVersion = "2.15.0.RELEASE"
 
 dependencies {
+	//MAPSTRUCT DEPENDENCIES
 	implementation("org.mapstruct:mapstruct:$mapstructVersion")
 	annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 	implementation("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
 
-	runtimeOnly("io.grpc:grpc-netty-shaded:1.62.2")
-	implementation("io.grpc:grpc-protobuf:1.62.2")
-	implementation("io.grpc:grpc-stub:1.62.2")
-	compileOnly("org.apache.tomcat:annotations-api:6.0.53")
+	//GRPC/PROTOBUF DEPENDENCIES
+	runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
+	implementation("io.grpc:grpc-protobuf:$grpcVersion")
+	implementation("io.grpc:grpc-stub:$grpcVersion")
+	compileOnly("org.apache.tomcat:annotations-api:$tomcatAnnotationsVersion")
+	implementation("net.devh:grpc-server-spring-boot-starter:$springBootVersion")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")

@@ -11,8 +11,6 @@ import java.util.UUID;
 @SpringBootTest
 public class BookMapperTest {
 
-    private final UUID testUUID = UUID.randomUUID();
-
     @Test
     void shouldProperlyMapEntityToDto() {
 
