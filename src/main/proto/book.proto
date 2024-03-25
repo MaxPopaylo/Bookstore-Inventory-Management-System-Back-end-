@@ -10,4 +10,6 @@ service BookService {
   rpc save (book_types.saveRequest) returns (book_types.saveResponse);
   rpc delete (book_types.deleteRequest) returns (google.protobuf.Empty);
   rpc update (book_types.updateRequest) returns (book_types.updateResponse);
+  rpc sell (book_types.sellRequest) returns (book_types.sellResponse);
+  rpc receive (book_types.receiveRequest) returns (book_types.receiveResponse);
 }

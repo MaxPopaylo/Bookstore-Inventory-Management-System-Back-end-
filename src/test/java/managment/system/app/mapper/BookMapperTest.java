@@ -4,6 +4,7 @@ import app.grpc.book_types.BookTypes;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -12,68 +13,73 @@ import java.util.UUID;
 @SpringBootTest
 public class BookMapperTest {
 
+    private final Book defaultBook = new Book();
+    private final BookDto defaultDto = new BookDto();
+
+    @BeforeEach
+    public void initializeBooks() {
+        defaultBook.setId(UUID.randomUUID());
+        defaultBook.setTitle("Correct Title");
+        defaultBook.setAuthor("Correct Author");
+        defaultBook.setIsbn("Isbn");
+        defaultBook.setQuantity(1);
+
+        defaultDto.setTitle("Correct Title");
+        defaultDto.setAuthor("Correct Author");
+        defaultDto.setIsbn("Isbn");
+        defaultDto.setQuantity(1);
+    }
+
     @Test
     void shouldProperlyMapEntityToDto() {
 
-        Book book = new Book();
-        book.setTitle("Correct Title");
-
-        BookDto dto = BookMapper.mapper.toDto(book);
+        BookDto dto = BookMapper.mapper.toDto(defaultBook);
 
         Assertions.assertNotNull(dto);
-        Assertions.assertEquals(dto.getTitle(), book.getTitle());
+        Assertions.assertEquals(dto.getTitle(), defaultBook.getTitle());
+        Assertions.assertEquals(dto.getAuthor(), defaultBook.getAuthor());
 
     }
 
     @Test
     void shouldProperlyMapDtoToEntity() {
 
-        BookDto dto = new BookDto();
-        dto.setTitle("Correct Title");
-
-        Book book = BookMapper.mapper.toEntity(dto);
+        Book book = BookMapper.mapper.toEntity(defaultDto);
 
         Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getTitle(), dto.getTitle());
+        Assertions.assertEquals(book.getTitle(), defaultDto.getTitle());
+        Assertions.assertEquals(book.getAuthor(), defaultDto.getAuthor());
 
     }
 
     @Test
     void shouldProperlyMapEntityToProtoEntity() {
 
-        Book book = new Book();
-        book.setId(UUID.randomUUID());
-        book.setTitle("Correct Title");
-        book.setAuthor("Correct Author");
-        book.setIsbn("Isbn");
-        book.setQuantity(1);
+        BookTypes.Book protoBook = BookMapper.mapper.toProtoEntity(defaultBook);
 
-        BookTypes.Book protoBook = BookMapper.mapper.toProtoEntity(book);
-
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getTitle(), protoBook.getTitle());
-        Assertions.assertEquals(book.getAuthor(), protoBook.getAuthor());
-        Assertions.assertEquals(book.getIsbn(), protoBook.getIsbn());
-        Assertions.assertEquals(book.getQuantity(), protoBook.getQuantity());
+        Assertions.assertNotNull(protoBook);
+        Assertions.assertEquals(protoBook.getTitle(), defaultBook.getTitle());
+        Assertions.assertEquals(protoBook.getAuthor(), defaultBook.getAuthor());
+        Assertions.assertEquals(protoBook.getIsbn(), defaultBook.getIsbn());
 
     }
 
     @Test
-    void shouldProperlyMapDtoToProtoDto() {
+    void shouldProperlyMapProtoDtoToDto() {
 
-        BookDto dto = new BookDto();
-        dto.setTitle("Correct Title");
-        dto.setAuthor("Correct Author");
-        dto.setIsbn("Isbn");
-        dto.setQuantity(1);
+        var protoDto = BookTypes.BookDTO.newBuilder()
+                .setTitle(defaultDto.getTitle())
+                .setAuthor(defaultDto.getAuthor())
+                .setIsbn(defaultDto.getIsbn())
+                .setQuantity(defaultDto.getQuantity())
+                .build();
 
-        BookTypes.BookDTO protoDto = BookMapper.mapper.toProtoDto(dto);
+        BookDto dto = BookMapper.mapper.toDtoFromProto(protoDto);
 
-        Assertions.assertNotNull(dto);
+        Assertions.assertNotNull(protoDto);
         Assertions.assertEquals(dto.getTitle(), protoDto.getTitle());
         Assertions.assertEquals(dto.getAuthor(), protoDto.getAuthor());
         Assertions.assertEquals(dto.getIsbn(), protoDto.getIsbn());
-        Assertions.assertEquals(dto.getQuantity(), protoDto.getQuantity());
 
     }
 

@@ -23,7 +23,7 @@ public interface BookMapper {
     @Mapping(source = "id", target = "id", qualifiedByName = "convertId")
     BookTypes.Book toProtoEntity(Book book);
 
-    BookTypes.BookDTO toProtoDto(BookDto dto);
+    BookDto toDtoFromProto(BookTypes.BookDTO dto);
 
     @Named("convertId")
     default BookTypes.UUID convertId(UUID id) {
@@ -31,4 +31,5 @@ public interface BookMapper {
                 .setValue(id.toString())
                 .build();
     }
+
 }

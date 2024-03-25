@@ -39,9 +39,25 @@ message deleteRequest {
 }
 
 message updateRequest {
-  BookDTO dto = 1;
-  UUID id = 2;
+  UUID id = 1;
+  BookDTO dto = 2;
 }
 message updateResponse {
   Book book = 1;
+}
+
+message sellRequest {
+  UUID id = 1;
+  int32 quantity = 2;
+}
+message sellResponse {
+  int32 quantity = 1;
+}
+
+message receiveRequest {
+  UUID id = 1;
+  int32 quantity = 2;
+}
+message receiveResponse {
+  int32 quantity = 1;
 }
