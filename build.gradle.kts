@@ -48,8 +48,11 @@ val lombokMapstructBindingVersion = "0.2.0"
 val grpcVersion = "1.62.2"
 val tomcatAnnotationsVersion = "6.0.53"
 val springBootVersion = "2.15.0.RELEASE"
+val lang3Version = "3.14.0"
 
 dependencies {
+	implementation("org.apache.commons:commons-lang3:$lang3Version")
+
 	//MAPSTRUCT DEPENDENCIES
 	implementation("org.mapstruct:mapstruct:$mapstructVersion")
 	annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")

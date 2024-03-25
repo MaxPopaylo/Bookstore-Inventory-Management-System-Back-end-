@@ -1,8 +1,6 @@
 package managment.system.app.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -15,6 +13,7 @@ import java.util.UUID;
 public class Book {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private UUID id;
 
     private String title;

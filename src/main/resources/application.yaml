@@ -7,3 +7,4 @@ spring:
 grpc:
   server:
     port: 9080
+

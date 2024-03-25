@@ -6,11 +6,14 @@ import managment.system.app.entity.Book;
 import managment.system.app.mapper.BookMapper;
 import managment.system.app.reporitory.BookRepository;
 import managment.system.app.utils.exceptions.BookNotFoundException;
+import managment.system.app.utils.exceptions.BookNotInStockException;
 import managment.system.app.utils.exceptions.BookNotSavedException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -32,10 +35,7 @@ public class BookDao {
 
     @Transactional
     public Book save(BookDto dto) {
-        Book book = repository.save(BookMapper.mapper.toEntity(dto));
-        if (book == null) throw new BookNotSavedException();
-
-        return book;
+        return saveEntityIntoDb(BookMapper.mapper.toEntity(dto));
     }
 
     @Transactional
@@ -45,14 +45,44 @@ public class BookDao {
     }
 
     @Transactional
-    public Book update(BookDto dto, UUID id) {
-        Book oldBook = getById(id);
-        oldBook.setTitle(dto.getTitle() != null ? dto.getTitle() : oldBook.getTitle());
-        oldBook.setAuthor(dto.getAuthor() != null ? dto.getAuthor() : oldBook.getAuthor());
-        oldBook.setIsbn(dto.getIsbn() != null ? dto.getIsbn() : oldBook.getIsbn());
-        oldBook.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : oldBook.getQuantity());
+    public Book update(UUID id, BookDto dto) {
 
-        return save(BookMapper.mapper.toDto(oldBook));
+        Book oldBook = getById(id);
+        oldBook.setTitle(StringUtils.defaultIfBlank(dto.getTitle(), oldBook.getTitle()));
+        oldBook.setAuthor(StringUtils.defaultIfBlank(dto.getAuthor(), oldBook.getAuthor()));
+        oldBook.setIsbn(StringUtils.defaultIfBlank(dto.getIsbn(), oldBook.getIsbn()));
+
+        return saveEntityIntoDb(oldBook);
+    }
+
+    @Transactional
+    public Book sell(UUID id, int quantity) {
+
+        Book oldBook = getById(id);
+        if (oldBook.getQuantity() < quantity) {
+            throw new BookNotInStockException(quantity);
+        }
+
+        oldBook.setQuantity(oldBook.getQuantity() - quantity);
+
+        return saveEntityIntoDb(oldBook);
+    }
+
+    @Transactional
+    public Book receive(UUID id, int quantity) {
+        Book oldBook = getById(id);
+        oldBook.setQuantity(oldBook.getQuantity() + quantity);
+
+        return saveEntityIntoDb(oldBook);
+    }
+
+
+    @Transactional
+    protected Book saveEntityIntoDb(Book entity) {
+        Book book = repository.save(entity);
+        if (book == null) throw new BookNotSavedException();
+
+        return book;
     }
 
 }

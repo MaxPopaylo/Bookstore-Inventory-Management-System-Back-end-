@@ -103,7 +103,7 @@ public class BookDaoTest {
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
         when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Book book = dao.update(dto, bookUUID);
+        Book book = dao.update(bookUUID, dto);
 
         verify(repository, times(1)).save(any(Book.class));
 
