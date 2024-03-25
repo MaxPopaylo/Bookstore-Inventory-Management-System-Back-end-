@@ -1,6 +1,6 @@
 package managment.system.app.mapper;
 
-import app.grpc.book.BookOuterClass;
+import app.grpc.book_types.BookTypes;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import org.junit.jupiter.api.Assertions;
@@ -48,7 +48,7 @@ public class BookMapperTest {
         book.setIsbn("Isbn");
         book.setQuantity(1);
 
-        BookOuterClass.Book protoBook = BookMapper.mapper.toProtoEntity(book);
+        BookTypes.Book protoBook = BookMapper.mapper.toProtoEntity(book);
 
         Assertions.assertNotNull(book);
         Assertions.assertEquals(book.getTitle(), protoBook.getTitle());
@@ -67,7 +67,7 @@ public class BookMapperTest {
         dto.setIsbn("Isbn");
         dto.setQuantity(1);
 
-        BookOuterClass.BookDTO protoDto = BookMapper.mapper.toProtoDto(dto);
+        BookTypes.BookDTO protoDto = BookMapper.mapper.toProtoDto(dto);
 
         Assertions.assertNotNull(dto);
         Assertions.assertEquals(dto.getTitle(), protoDto.getTitle());

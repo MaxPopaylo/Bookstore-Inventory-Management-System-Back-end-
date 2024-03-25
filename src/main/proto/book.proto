@@ -2,60 +2,12 @@ syntax = "proto3";
 package app.grpc.book;
 
 import "google/protobuf/empty.proto";
-
-message UUID {
-  string value = 1;
-}
-
-message Book {
-  UUID id = 1;
-  string title = 2;
-  string author = 3;
-  string isbn = 4;
-  int32 quantity = 5;
-}
-
-message BookDTO {
-  string title = 2;
-  string author = 3;
-  string isbn = 4;
-  int32 quantity = 5;
-}
-
-message getAllResponse {
-  repeated Book book = 1;
-}
-
-message getByIdRequest {
-  UUID id = 1;
-}
-message getByIdResponse {
-  Book book = 1;
-}
-
-message saveRequest {
-  BookDTO dto = 1;
-}
-message saveResponse {
-  Book book = 1;
-}
-
-message deleteRequest {
-  UUID id = 1;
-}
-
-message updateRequest {
-  BookDTO dto = 1;
-  UUID id = 2;
-}
-message updateResponse {
-  Book book = 1;
-}
+import "book_types.proto";
 
 service BookService {
-  rpc getAll (google.protobuf.Empty) returns (getAllResponse);
-  rpc getById (getByIdRequest) returns (getByIdResponse);
-  rpc save (saveRequest) returns (saveResponse);
-  rpc delete (deleteRequest) returns (google.protobuf.Empty);
-  rpc update (updateRequest) returns (updateResponse);
+  rpc getAll (google.protobuf.Empty) returns (stream book_types.Book);
+  rpc getById (book_types.getByIdRequest) returns (book_types.getByIdResponse);
+  rpc save (book_types.saveRequest) returns (book_types.saveResponse);
+  rpc delete (book_types.deleteRequest) returns (google.protobuf.Empty);
+  rpc update (book_types.updateRequest) returns (book_types.updateResponse);
 }

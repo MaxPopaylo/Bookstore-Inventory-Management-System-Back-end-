@@ -1,6 +1,6 @@
 package managment.system.app.mapper;
 
-import app.grpc.book.BookOuterClass;
+import app.grpc.book_types.BookTypes;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import org.mapstruct.Mapper;
@@ -21,13 +21,13 @@ public interface BookMapper {
     Book toEntity(BookDto dto);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "convertId")
-    BookOuterClass.Book toProtoEntity(Book book);
+    BookTypes.Book toProtoEntity(Book book);
 
-    BookOuterClass.BookDTO toProtoDto(BookDto dto);
+    BookTypes.BookDTO toProtoDto(BookDto dto);
 
     @Named("convertId")
-    default BookOuterClass.UUID convertId(UUID id) {
-        return BookOuterClass.UUID.newBuilder()
+    default BookTypes.UUID convertId(UUID id) {
+        return BookTypes.UUID.newBuilder()
                 .setValue(id.toString())
                 .build();
     }

@@ -1,0 +1,47 @@
+syntax = "proto3";
+package app.grpc.book_types;
+
+message UUID {
+  string value = 1;
+}
+
+message Book {
+  UUID id = 1;
+  string title = 2;
+  string author = 3;
+  string isbn = 4;
+  int32 quantity = 5;
+}
+
+message BookDTO {
+  string title = 2;
+  string author = 3;
+  string isbn = 4;
+  int32 quantity = 5;
+}
+
+message getByIdRequest {
+  UUID id = 1;
+}
+message getByIdResponse {
+  Book book = 1;
+}
+
+message saveRequest {
+  BookDTO dto = 1;
+}
+message saveResponse {
+  Book book = 1;
+}
+
+message deleteRequest {
+  UUID id = 1;
+}
+
+message updateRequest {
+  BookDTO dto = 1;
+  UUID id = 2;
+}
+message updateResponse {
+  Book book = 1;
+}

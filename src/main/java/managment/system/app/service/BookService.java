@@ -1,7 +1,7 @@
 package managment.system.app.service;
 
-import app.grpc.book.BookOuterClass;
 import app.grpc.book.BookServiceGrpc;
+import app.grpc.book_types.BookTypes;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -19,25 +19,25 @@ public class BookService extends BookServiceGrpc.BookServiceImplBase {
 
     private final BookDao dao;
 
-    @Override
     public void getAll(Empty request,
-                       StreamObserver<BookOuterClass.getAllResponse> responseObserver) {
+                       StreamObserver<BookTypes.Book> responseObserver) {
 
         List<? extends Book> books = dao.getAll();
+
 
 //        var response = BookOuterClass.getAllResponse.newBuilder().addAllBook()
     }
 
     @Override
-    public void getById(BookOuterClass.getByIdRequest request,
-                        StreamObserver<BookOuterClass.getByIdResponse> responseObserver) {
+    public void getById(BookTypes.getByIdRequest request,
+                        StreamObserver<BookTypes.getByIdResponse> responseObserver) {
 
         UUID id = UUID.fromString(request.getId().getValue());
         Book book = dao.getById(id);
 
-        BookOuterClass.Book responseBook = BookMapper.mapper.toProtoEntity(book);
+        BookTypes.Book responseBook = BookMapper.mapper.toProtoEntity(book);
 
-        var response = BookOuterClass.getByIdResponse
+        var response = BookTypes.getByIdResponse
                 .newBuilder()
                 .setBook(responseBook)
                 .build();
