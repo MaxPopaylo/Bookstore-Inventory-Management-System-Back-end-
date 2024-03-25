@@ -22,12 +22,12 @@ public class BookMapperTest {
         defaultBook.setTitle("Correct Title");
         defaultBook.setAuthor("Correct Author");
         defaultBook.setIsbn("Isbn");
-        defaultBook.setQuantity(1);
+        defaultBook.setQuantity(5);
 
         defaultDto.setTitle("Correct Title");
         defaultDto.setAuthor("Correct Author");
         defaultDto.setIsbn("Isbn");
-        defaultDto.setQuantity(1);
+        defaultDto.setQuantity(5);
     }
 
     @Test

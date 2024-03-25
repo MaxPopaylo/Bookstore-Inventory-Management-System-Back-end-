@@ -40,8 +40,14 @@ public class BookDaoTest {
     public void initializeBooks() {
         defaultBook.setId(bookUUID);
         defaultBook.setTitle("Correct Title");
+        defaultBook.setAuthor("Correct Author");
+        defaultBook.setIsbn("Isbn");
+        defaultBook.setQuantity(5);
 
         defaultDto.setTitle("Correct Title");
+        defaultDto.setAuthor("Correct Author");
+        defaultDto.setIsbn("Isbn");
+        defaultDto.setQuantity(5);
     }
 
     @Test
@@ -110,6 +116,36 @@ public class BookDaoTest {
         Assertions.assertNotNull(book);
         Assertions.assertEquals(book.getTitle(), dto.getTitle());
         Assertions.assertEquals(book.getAuthor(), dto.getAuthor());
+    }
+
+    @Test
+    void shouldProperlyDeductFromQuantityFromEntity() {
+
+        when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
+        when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        int oldQuantity = defaultBook.getQuantity();
+        Book book = dao.sell(bookUUID, 2);
+
+        verify(repository, times(1)).save(any(Book.class));
+
+        Assertions.assertNotNull(book);
+        Assertions.assertEquals(book.getQuantity(), oldQuantity - 2);
+    }
+
+    @Test
+    void shouldProperlyAddIntoQuantityFromEntity() {
+
+        when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
+        when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        int oldQuantity = defaultBook.getQuantity();
+        Book book = dao.receive(bookUUID, 2);
+
+        verify(repository, times(1)).save(any(Book.class));
+
+        Assertions.assertNotNull(book);
+        Assertions.assertEquals(book.getQuantity(), oldQuantity + 2);
     }
 
 }
