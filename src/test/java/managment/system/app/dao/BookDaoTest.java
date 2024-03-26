@@ -5,6 +5,7 @@ import managment.system.app.entity.Book;
 import managment.system.app.reporitory.BookRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -51,6 +52,7 @@ public class BookDaoTest {
     }
 
     @Test
+    @DisplayName("Junit test for getting all entities from database")
     void shouldProperlyGetAllEntity() {
 
         when(repository.findAll()).thenReturn(singletonList(defaultBook));
@@ -64,6 +66,7 @@ public class BookDaoTest {
     }
 
     @Test
+    @DisplayName("Junit test for getting entity by ID from database")
     void shouldProperlyGetEntityById() {
 
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
@@ -77,6 +80,7 @@ public class BookDaoTest {
     }
 
     @Test
+    @DisplayName("Junit test for saving entity into database")
     void shouldProperlySaveEntity() {
 
         when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -90,6 +94,7 @@ public class BookDaoTest {
     }
 
     @Test
+    @DisplayName("Junit test for deleting entity by ID from database")
     void shouldProperlyDeleteEntity() {
 
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
@@ -100,6 +105,7 @@ public class BookDaoTest {
     }
 
     @Test
+    @DisplayName("Junit test for updating entity by ID from database")
     void shouldProperlyUpdateEntity() {
 
         BookDto dto = new BookDto();
@@ -119,6 +125,7 @@ public class BookDaoTest {
     }
 
     @Test
+    @DisplayName("Junit test for subtracting to the quantity into entity by ID from database")
     void shouldProperlyDeductFromQuantityFromEntity() {
 
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
@@ -134,6 +141,7 @@ public class BookDaoTest {
     }
 
     @Test
+    @DisplayName("Junit test for adding to the quantity into entity by ID from database")
     void shouldProperlyAddIntoQuantityFromEntity() {
 
         when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));

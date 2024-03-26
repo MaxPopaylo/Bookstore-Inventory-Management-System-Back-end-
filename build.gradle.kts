@@ -66,14 +66,21 @@ dependencies {
 	compileOnly("org.apache.tomcat:annotations-api:$tomcatAnnotationsVersion")
 	implementation("net.devh:grpc-server-spring-boot-starter:$springBootVersion")
 
+	//JUNIT TESTING DEPENDENCIES
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:postgresql")
+	testImplementation("io.grpc:grpc-testing:$grpcVersion")
+
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.flywaydb:flyway-core")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
+
 }
 
 tasks.withType<Test> {

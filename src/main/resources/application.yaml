@@ -4,7 +4,10 @@ spring:
     username: postgres
     password: root
 
+  sql:
+    init:
+      mode: always
+
 grpc:
   server:
     port: 9080
-
