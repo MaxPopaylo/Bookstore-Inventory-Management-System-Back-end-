@@ -1,7 +1,18 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5444/book_store_db
+
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5444/book_store_db
     username: postgres
+    password: root
+
+  flyway:
+    url: jdbc:postgresql://localhost:5444/book_store_db
+    user: postgres
     password: root
 
   sql:

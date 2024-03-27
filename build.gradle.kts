@@ -11,23 +11,40 @@ plugins {
 group = "managment.system"
 version = "0.0.1-SNAPSHOT"
 
+object Versions {
+	const val mapstruct = "1.5.5.Final"
+	const val lombokMapstructBinding = "0.2.0"
+
+	const val grpc = "1.62.2"
+	const val protobuf = "3.25.1"
+	const val reactorGrpc ="1.2.4"
+	const val grpcSpringBootStarter = "2.15.0.RELEASE"
+	const val tomcatAnnotations = "6.0.53"
+
+	const val lang3 = "3.14.0"
+}
+
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
 }
 
 protobuf {
 	protoc {
-		artifact = "com.google.protobuf:protoc:3.25.1"
+		artifact = "com.google.protobuf:protoc:${Versions.protobuf}"
 	}
 	plugins {
-		create("grpc") {
-			artifact = "io.grpc:protoc-gen-grpc-java:1.62.2"
+		id("grpc") {
+			artifact = "io.grpc:protoc-gen-grpc-java:${Versions.grpc}"
+		}
+		id("reactor") {
+			artifact = "com.salesforce.servicelibs:reactor-grpc:${Versions.reactorGrpc}"
 		}
 	}
 	generateProtoTasks {
 		all().forEach {
 			it.plugins {
-				id("grpc") {}
+				id("grpc")
+				id("reactor")
 			}
 		}
 	}
@@ -43,44 +60,43 @@ repositories {
 	mavenCentral()
 }
 
-val mapstructVersion = "1.5.5.Final"
-val lombokMapstructBindingVersion = "0.2.0"
-val grpcVersion = "1.62.2"
-val tomcatAnnotationsVersion = "6.0.53"
-val springBootVersion = "2.15.0.RELEASE"
-val lang3Version = "3.14.0"
-
 dependencies {
-	implementation("org.apache.commons:commons-lang3:$lang3Version")
+	implementation("org.apache.commons:commons-lang3:${Versions.lang3}")
 
 	//MAPSTRUCT DEPENDENCIES
-	implementation("org.mapstruct:mapstruct:$mapstructVersion")
-	annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-	implementation("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
-	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
+	implementation("org.mapstruct:mapstruct:${Versions.mapstruct}")
+	annotationProcessor("org.mapstruct:mapstruct-processor:${Versions.mapstruct}")
+	implementation("org.projectlombok:lombok-mapstruct-binding:${Versions.lombokMapstructBinding}")
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${Versions.lombokMapstructBinding}")
 
 	//GRPC/PROTOBUF DEPENDENCIES
-	runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
-	implementation("io.grpc:grpc-protobuf:$grpcVersion")
-	implementation("io.grpc:grpc-stub:$grpcVersion")
-	compileOnly("org.apache.tomcat:annotations-api:$tomcatAnnotationsVersion")
-	implementation("net.devh:grpc-server-spring-boot-starter:$springBootVersion")
+	runtimeOnly("io.grpc:grpc-netty-shaded:${Versions.grpc}")
+	implementation("io.grpc:grpc-protobuf:${Versions.grpc}")
+	implementation("io.grpc:grpc-stub:${Versions.grpc}")
+	compileOnly("org.apache.tomcat:annotations-api:${Versions.tomcatAnnotations}")
+	implementation("net.devh:grpc-server-spring-boot-starter:${Versions.grpcSpringBootStarter}")
+	implementation("com.salesforce.servicelibs:reactor-grpc-stub:${Versions.reactorGrpc}")
 
 	//JUNIT TESTING DEPENDENCIES
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
-	testImplementation("io.grpc:grpc-testing:$grpcVersion")
+	testImplementation("io.grpc:grpc-testing:${Versions.grpc}")
 
+	//DATABASE DEPENDENCIES
+	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.flywaydb:flyway-core")
-	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
-	annotationProcessor("org.projectlombok:lombok")
+	runtimeOnly("org.postgresql:r2dbc-postgresql")
+
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	testImplementation("io.projectreactor:reactor-test")
 
+	compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
 }
 
 tasks.withType<Test> {
