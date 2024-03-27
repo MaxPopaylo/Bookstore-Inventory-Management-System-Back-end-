@@ -1,19 +1,22 @@
 package managment.system.app.entity;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
-@Entity
-@Getter
-@Setter
+
+@Data
 @NoArgsConstructor
 @Table(name = "books")
 public class Book {
 
-    @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Id
     private UUID id;
 
     private String title;
