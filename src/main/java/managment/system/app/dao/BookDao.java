@@ -1,5 +1,6 @@
 package managment.system.app.dao;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import lombok.RequiredArgsConstructor;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
@@ -11,8 +12,9 @@ import managment.system.app.utils.exceptions.BookNotSavedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 
@@ -23,65 +25,64 @@ public class BookDao {
 
     private final BookRepository repository;
 
-    public List<Book> getAll() {
+    public Flux<Book> getAll() {
         return repository.findAll();
     }
 
-    public Book getById(UUID id) {
+    public Mono<Book> getById(UUID id) {
         return repository.findById(id)
-                .orElseThrow(BookNotFoundException::new);
+                .switchIfEmpty(Mono.error(new BookNotFoundException()));
     }
 
     @Transactional
-    public Book save(BookDto dto) {
+    public Mono<Book> save(BookDto dto) {
         return saveEntityIntoDb(BookMapper.mapper.toEntity(dto));
     }
 
     @Transactional
-    public void delete(UUID id) {
-        Book book = getById(id);
-        repository.delete(book);
+    public Mono<TypeResolutionContext.Empty> delete(UUID id) {
+        return getById(id)
+                .flatMap(repository::delete)
+                .then(Mono.empty());
     }
 
     @Transactional
-    public Book update(UUID id, BookDto dto) {
+    public Mono<Book> update(UUID id, BookDto dto) {
+        return getById(id)
+                .flatMap(val ->{
+                    val.setTitle(StringUtils.defaultIfBlank(dto.getTitle(), val.getTitle()));
+                    val.setAuthor(StringUtils.defaultIfBlank(dto.getAuthor(), val.getAuthor()));
+                    val.setIsbn(StringUtils.defaultIfBlank(dto.getIsbn(), val.getIsbn()));
 
-        Book oldBook = getById(id);
-        oldBook.setTitle(StringUtils.defaultIfBlank(dto.getTitle(), oldBook.getTitle()));
-        oldBook.setAuthor(StringUtils.defaultIfBlank(dto.getAuthor(), oldBook.getAuthor()));
-        oldBook.setIsbn(StringUtils.defaultIfBlank(dto.getIsbn(), oldBook.getIsbn()));
-
-        return saveEntityIntoDb(oldBook);
+                    return saveEntityIntoDb(val);
+                });
     }
 
     @Transactional
-    public Book sell(UUID id, int quantity) {
+    public Mono<Book> sell(UUID id, int quantity) {
+        return getById(id)
+                .flatMap(val -> {
+                    if (val.getQuantity() < quantity) return Mono.error(new BookNotInStockException(quantity));
 
-        Book oldBook = getById(id);
-        if (oldBook.getQuantity() < quantity) {
-            throw new BookNotInStockException(quantity);
-        }
-
-        oldBook.setQuantity(oldBook.getQuantity() - quantity);
-
-        return saveEntityIntoDb(oldBook);
+                    val.setQuantity(val.getQuantity() - quantity);
+                    return saveEntityIntoDb(val);
+                });
     }
 
     @Transactional
-    public Book receive(UUID id, int quantity) {
-        Book oldBook = getById(id);
-        oldBook.setQuantity(oldBook.getQuantity() + quantity);
-
-        return saveEntityIntoDb(oldBook);
+    public Mono<Book> receive(UUID id, int quantity) {
+        return getById(id)
+                .flatMap(val -> {
+                    val.setQuantity(val.getQuantity() + quantity);
+                    return saveEntityIntoDb(val);
+                });
     }
 
 
     @Transactional
-    protected Book saveEntityIntoDb(Book entity) {
-        Book book = repository.save(entity);
-        if (book == null) throw new BookNotSavedException();
-
-        return book;
+    protected Mono<Book> saveEntityIntoDb(Book entity) {
+       return repository.save(entity)
+               .switchIfEmpty(Mono.error(new BookNotSavedException()));
     }
 
 }
