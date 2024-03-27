@@ -1,6 +1,7 @@
 package managment.system.app.dao;
 
 import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
+import com.google.protobuf.Empty;
 import lombok.RequiredArgsConstructor;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
@@ -40,10 +41,10 @@ public class BookDao {
     }
 
     @Transactional
-    public Mono<TypeResolutionContext.Empty> delete(UUID id) {
+    public Mono<Empty> delete(UUID id) {
         return getById(id)
                 .flatMap(repository::delete)
-                .then(Mono.empty());
+                .then(Mono.just(Empty.getDefaultInstance()));
     }
 
     @Transactional
