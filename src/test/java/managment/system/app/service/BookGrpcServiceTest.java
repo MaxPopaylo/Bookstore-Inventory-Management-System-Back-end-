@@ -109,17 +109,18 @@ public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
 
         StepVerifier
                 .create(stub.save(request))
-                .assertNext(response -> {
-
-                    StepVerifier
-                            .create(dao.getById(convertToUUID(response.getBook().getId())))
-                            .assertNext(val -> {
-                                assertNotNull(val);
-                                assertEquals(val.getTitle(), dto.getTitle());
-                                assertEquals(val.getAuthor(), dto.getAuthor());
-                            });
-                })
+                .assertNext(response ->
+                        StepVerifier
+                                .create(dao.getById(convertToUUID(response.getBook().getId())))
+                                .assertNext(val -> {
+                                    assertNotNull(val);
+                                    assertEquals(val.getTitle(), dto.getTitle());
+                                    assertEquals(val.getAuthor(), dto.getAuthor());
+                                })
+                                .verifyComplete()
+                )
                 .verifyComplete();
+
     }
 
     @Test
@@ -140,17 +141,18 @@ public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
 
         StepVerifier
                 .create(stub.update(request))
-                .assertNext(response -> {
-
-                    StepVerifier
-                            .create(dao.getById(convertToUUID(response.getBook().getId())))
-                            .assertNext(val -> {
-                                assertNotNull(val);
-                                assertEquals(val.getTitle(), dto.getTitle());
-                                assertEquals(val.getAuthor(), dto.getAuthor());
-                            });
-                })
+                .assertNext(response ->
+                        StepVerifier
+                                .create(dao.getById(convertToUUID(response.getBook().getId())))
+                                .assertNext(val -> {
+                                    assertNotNull(val);
+                                    assertEquals(val.getTitle(), dto.getTitle());
+                                    assertEquals(val.getAuthor(), dto.getAuthor());
+                                })
+                                .verifyComplete()
+                )
                 .verifyComplete();
+
 
     }
 

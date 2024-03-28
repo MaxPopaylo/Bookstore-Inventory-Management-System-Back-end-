@@ -4,7 +4,6 @@ import app.grpc.book_types.BookTypes;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
