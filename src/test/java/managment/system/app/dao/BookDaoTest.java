@@ -1,25 +1,23 @@
 package managment.system.app.dao;
 
+import com.google.protobuf.Empty;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
 import managment.system.app.reporitory.BookRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
+@Tag("unit")
 public class BookDaoTest {
 
     @Mock
@@ -55,13 +53,15 @@ public class BookDaoTest {
     @DisplayName("Junit test for getting all entities from database")
     void shouldProperlyGetAllEntity() {
 
-        when(repository.findAll()).thenReturn(singletonList(defaultBook));
+        when(repository.findAll()).thenReturn(Flux.just(defaultBook, defaultBook));
 
-        List<Book> books = dao.getAll();
-
-        Assertions.assertEquals(1, books.size());
-        Assertions.assertEquals(books.get(0).getId(), defaultBook.getId());
-        Assertions.assertEquals(books.get(0).getTitle(), defaultBook.getTitle());
+        StepVerifier.create(dao.getAll())
+                .expectNextCount(1)
+                .expectNextMatches(book ->
+                        book.getId().equals(defaultBook.getId()) &&
+                        book.getTitle().equals(defaultBook.getTitle()))
+                .expectComplete()
+                .verify();
 
     }
 
@@ -69,13 +69,14 @@ public class BookDaoTest {
     @DisplayName("Junit test for getting entity by ID from database")
     void shouldProperlyGetEntityById() {
 
-        when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
+        when(repository.findById(bookUUID)).thenReturn(Mono.just(defaultBook));
 
-        Book book = dao.getById(bookUUID);
-
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getId(), defaultBook.getId());
-        Assertions.assertEquals(book.getTitle(), defaultBook.getTitle());
+        StepVerifier.create(dao.getById(bookUUID))
+                .expectNextMatches(book ->
+                        book.getId().equals(defaultBook.getId()) &&
+                        book.getTitle().equals(defaultBook.getTitle()))
+                .expectComplete()
+                .verify();
 
     }
 
@@ -83,24 +84,32 @@ public class BookDaoTest {
     @DisplayName("Junit test for saving entity into database")
     void shouldProperlySaveEntity() {
 
-        when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.save(any(Book.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
-        Book book = dao.save(defaultDto);
+        StepVerifier.create(dao.save(defaultDto))
+                .expectNextMatches(book ->
+                        book.getTitle().equals(defaultBook.getTitle()) &&
+                        book.getAuthor().equals(defaultBook.getAuthor()))
+                .expectComplete()
+                .verify();
 
         verify(repository, times(1)).save(any(Book.class));
 
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getTitle(), defaultBook.getTitle());
     }
 
     @Test
     @DisplayName("Junit test for deleting entity by ID from database")
     void shouldProperlyDeleteEntity() {
 
-        when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
-        dao.delete(bookUUID);
+        when(repository.findById(bookUUID)).thenReturn(Mono.just(defaultBook));
+        when(repository.delete(any(Book.class))).thenReturn(Mono.empty());
 
-        verify(repository, times(1)).delete(any(Book.class));
+        StepVerifier.create(dao.delete(bookUUID))
+                .expectNextMatches(response -> response.equals(Empty.getDefaultInstance()))
+                .expectComplete()
+                .verify();
+
+        verify(repository, times(1)).delete(defaultBook);
 
     }
 
@@ -112,48 +121,55 @@ public class BookDaoTest {
         dto.setTitle("New Title");
         dto.setAuthor("New Author");
 
-        when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
-        when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.findById(bookUUID)).thenReturn(Mono.just(defaultBook));
+        when(repository.save(any(Book.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
-        Book book = dao.update(bookUUID, dto);
+
+        StepVerifier.create(dao.update(bookUUID, dto))
+                .expectNextMatches(book ->
+                        book.getTitle().equals(dto.getTitle()) &&
+                        book.getAuthor().equals(dto.getAuthor()))
+                .expectComplete()
+                .verify();
 
         verify(repository, times(1)).save(any(Book.class));
-
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getTitle(), dto.getTitle());
-        Assertions.assertEquals(book.getAuthor(), dto.getAuthor());
     }
 
     @Test
     @DisplayName("Junit test for subtracting to the quantity into entity by ID from database")
     void shouldProperlyDeductFromQuantityFromEntity() {
 
-        when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
-        when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.findById(bookUUID)).thenReturn(Mono.just(defaultBook));
+        when(repository.save(any(Book.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         int oldQuantity = defaultBook.getQuantity();
-        Book book = dao.sell(bookUUID, 2);
+
+        StepVerifier.create(dao.sell(bookUUID, 2))
+                .expectNextMatches(book ->
+                        book.getQuantity().equals(oldQuantity - 2))
+                .expectComplete()
+                .verify();
 
         verify(repository, times(1)).save(any(Book.class));
 
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getQuantity(), oldQuantity - 2);
     }
 
     @Test
     @DisplayName("Junit test for adding to the quantity into entity by ID from database")
     void shouldProperlyAddIntoQuantityFromEntity() {
 
-        when(repository.findById(bookUUID)).thenReturn(Optional.of(defaultBook));
-        when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.findById(bookUUID)).thenReturn(Mono.just(defaultBook));
+        when(repository.save(any(Book.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         int oldQuantity = defaultBook.getQuantity();
-        Book book = dao.receive(bookUUID, 2);
+
+        StepVerifier.create(dao.receive(bookUUID, 2))
+                .expectNextMatches(book ->
+                        book.getQuantity().equals(oldQuantity + 2))
+                .expectComplete()
+                .verify();
 
         verify(repository, times(1)).save(any(Book.class));
-
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getQuantity(), oldQuantity + 2);
     }
 
 }

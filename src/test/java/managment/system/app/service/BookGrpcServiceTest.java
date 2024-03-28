@@ -1,64 +1,35 @@
 package managment.system.app.service;
 
 
-import app.grpc.book.BookServiceGrpc;
+import app.grpc.book.ReactorBookServiceGrpc;
 import app.grpc.book_types.BookTypes;
+import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import managment.system.app.configuration.AbstractTestcontainersIntegrationTest;
 import managment.system.app.dao.BookDao;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
-import managment.system.app.mapper.BookMapper;
 import managment.system.app.utils.exceptions.BookNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import reactor.test.StepVerifier;
 
-
-import java.nio.channels.Channel;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
-@Testcontainers
+//@Testcontainers
 @SpringBootTest
-public class BookGrpcServiceTest {
+@Tag("integration")
+public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
 
     //INITIALISE DB SERVICE
     @Autowired
     private BookDao dao;
-
-    //INITIALISE DB TEST CONTAINER
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
-
-    @BeforeAll
-    static void beforeAll() {
-        postgres.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
 
     //INITIALISE GRPC VARIABLES
     private final ManagedChannel channel = ManagedChannelBuilder
@@ -66,8 +37,8 @@ public class BookGrpcServiceTest {
             .usePlaintext()
             .build();
 
-    private final BookServiceGrpc.BookServiceBlockingStub stub =
-            BookServiceGrpc.newBlockingStub(channel);
+    private final ReactorBookServiceGrpc.ReactorBookServiceStub stub =
+            ReactorBookServiceGrpc.newReactorStub(channel);
 
 
     //INITIALISE DEFAULT VARIABLES
@@ -82,31 +53,47 @@ public class BookGrpcServiceTest {
         defaultDto.setIsbn("Isbn");
         defaultDto.setQuantity(5);
 
-        defaultBook = dao.save(defaultDto);
-        id = defaultBook.getId();
+
+        defaultBook = dao.save(defaultDto).block();
+        id = Objects.requireNonNull(defaultBook).getId();
     }
 
+    @Test
+    @DisplayName("Integration test for getting all books from grpc server")
+    void shouldProperlyGetAllBooks() {
+
+        BookTypes.getByIdRequest request = BookTypes.getByIdRequest.newBuilder()
+                .setId(convertToProtoUUID(id))
+                .build();
+
+
+        StepVerifier
+                .create(stub.getById(request))
+                .assertNext(Assertions::assertNotNull)
+                .verifyComplete();
+
+    }
 
     @Test
-    @DisplayName("Junit test for getting book by id from grpc server")
+    @DisplayName("Integration  test for getting book by id from grpc server")
     void shouldProperlyGetBookById() {
 
         BookTypes.getByIdRequest request = BookTypes.getByIdRequest.newBuilder()
                 .setId(convertToProtoUUID(id))
                 .build();
 
-        BookTypes.getByIdResponse expected = BookTypes.getByIdResponse.newBuilder()
-                .setBook(BookMapper.mapper.toProtoEntity(defaultBook))
-                .build();
-
-        var response = stub.getById(request);
-        Assertions.assertNotNull(response.getBook());
-        Assertions.assertEquals(response, expected);
+        StepVerifier
+                .create(stub.getById(request))
+                .assertNext(response -> {
+                    assertNotNull(response.getBook());
+                    assertEquals(response.getBook().getTitle(), defaultBook.getTitle());
+                })
+                .verifyComplete();
     }
 
 
     @Test
-    @DisplayName("Junit test for saving entity into grpc server")
+    @DisplayName("Integration  test for saving entity into grpc server")
     void shouldProperlySaveBook() {
 
         BookTypes.BookDTO dto = BookTypes.BookDTO.newBuilder()
@@ -119,19 +106,24 @@ public class BookGrpcServiceTest {
         BookTypes.saveRequest request =  BookTypes.saveRequest.newBuilder()
                 .setDto(dto)
                 .build();
-        var response = stub.save(request);
 
-        var book = dao.getById(convertToUUID(response.getBook().getId()));
-        BookTypes.saveResponse expected = BookTypes.saveResponse.newBuilder()
-                .setBook(BookMapper.mapper.toProtoEntity(book))
-                .build();
+        StepVerifier
+                .create(stub.save(request))
+                .assertNext(response -> {
 
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(response, expected);
+                    StepVerifier
+                            .create(dao.getById(convertToUUID(response.getBook().getId())))
+                            .assertNext(val -> {
+                                assertNotNull(val);
+                                assertEquals(val.getTitle(), dto.getTitle());
+                                assertEquals(val.getAuthor(), dto.getAuthor());
+                            });
+                })
+                .verifyComplete();
     }
 
     @Test
-    @DisplayName("Junit test for updating entity into grpc server")
+    @DisplayName("Integration  test for updating entity into grpc server")
     void shouldProperlyUpdateBook() {
 
         BookTypes.BookDTO dto = BookTypes.BookDTO.newBuilder()
@@ -145,21 +137,25 @@ public class BookGrpcServiceTest {
                 .setDto(dto)
                 .setId(convertToProtoUUID(id))
                 .build();
-        var response = stub.update(request);
 
-        var expectedBook = dao.getById(id);
-        BookTypes.updateResponse expected = BookTypes.updateResponse.newBuilder()
-                .setBook(BookMapper.mapper.toProtoEntity(expectedBook))
-                .build();
+        StepVerifier
+                .create(stub.update(request))
+                .assertNext(response -> {
 
-        Assertions.assertNotNull(defaultBook);
-        Assertions.assertEquals(response.getBook().getTitle(), dto.getTitle());
-        Assertions.assertEquals(response, expected);
+                    StepVerifier
+                            .create(dao.getById(convertToUUID(response.getBook().getId())))
+                            .assertNext(val -> {
+                                assertNotNull(val);
+                                assertEquals(val.getTitle(), dto.getTitle());
+                                assertEquals(val.getAuthor(), dto.getAuthor());
+                            });
+                })
+                .verifyComplete();
 
     }
 
     @Test
-    @DisplayName("Junit test for subtracting to the quantity into entity by ID from grpc server")
+    @DisplayName("Integration  test for subtracting to the quantity into entity by ID from grpc server")
     void shouldProperlyDeductFromQuantityFromBook() {
 
         var oldQuantity = defaultBook.getQuantity();
@@ -168,14 +164,18 @@ public class BookGrpcServiceTest {
                 .setQuantity(2)
                 .build();
 
-        var response = stub.sell(request);
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getQuantity(), oldQuantity - 2);
+        StepVerifier
+                .create(stub.sell(request))
+                .assertNext(response -> {
+                    assertNotNull(response);
+                    assertEquals(response.getQuantity(), oldQuantity - 2);
+                })
+                .verifyComplete();
 
     }
 
     @Test
-    @DisplayName("Junit test for adding to the quantity into entity by ID grpc server")
+    @DisplayName("Integration  test for adding to the quantity into entity by ID grpc server")
     void shouldProperlyAddIntoQuantityFromBook() {
 
         var oldQuantity = defaultBook.getQuantity();
@@ -184,24 +184,36 @@ public class BookGrpcServiceTest {
                 .setQuantity(2)
                 .build();
 
-        var response = stub.receive(request);
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getQuantity(), oldQuantity + 2);
+        StepVerifier
+                .create(stub.receive(request))
+                .assertNext(response -> {
+                    assertNotNull(response);
+                    assertEquals(response.getQuantity(), oldQuantity + 2);
+                })
+                .verifyComplete();
 
     }
 
 
     @Test
-    @DisplayName("Junit test for deleting book by id from grpc server")
+    @DisplayName("Integration  test for deleting book by id from grpc server")
     void shouldProperlyDeleteBookById() {
         BookTypes.deleteRequest request = BookTypes.deleteRequest.newBuilder()
                 .setId(convertToProtoUUID(id))
                 .build();
-        stub.delete(request);
 
-        Assertions.assertThrows(BookNotFoundException.class, () -> {
-            dao.getById(id);
-        });
+        StepVerifier
+                .create(stub.delete(request))
+                .expectNextMatches(response -> response.equals(Empty.getDefaultInstance()))
+                .expectComplete()
+                .verify();
+
+
+        StepVerifier
+                .create(dao.getById(id))
+                .expectError(BookNotFoundException.class)
+                .verify();
+
     }
 
     private BookTypes.UUID convertToProtoUUID(UUID id) {

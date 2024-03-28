@@ -3,15 +3,15 @@ package managment.system.app.mapper;
 import app.grpc.book_types.BookTypes;
 import managment.system.app.dto.BookDto;
 import managment.system.app.entity.Book;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@Tag("unit")
 public class BookMapperTest {
 
     private final Book defaultBook = new Book();
@@ -37,9 +37,9 @@ public class BookMapperTest {
 
         BookDto dto = BookMapper.mapper.toDto(defaultBook);
 
-        Assertions.assertNotNull(dto);
-        Assertions.assertEquals(dto.getTitle(), defaultBook.getTitle());
-        Assertions.assertEquals(dto.getAuthor(), defaultBook.getAuthor());
+        assertNotNull(dto);
+        assertEquals(dto.getTitle(), defaultBook.getTitle());
+        assertEquals(dto.getAuthor(), defaultBook.getAuthor());
 
     }
 
@@ -49,9 +49,9 @@ public class BookMapperTest {
 
         Book book = BookMapper.mapper.toEntity(defaultDto);
 
-        Assertions.assertNotNull(book);
-        Assertions.assertEquals(book.getTitle(), defaultDto.getTitle());
-        Assertions.assertEquals(book.getAuthor(), defaultDto.getAuthor());
+        assertNotNull(book);
+        assertEquals(book.getTitle(), defaultDto.getTitle());
+        assertEquals(book.getAuthor(), defaultDto.getAuthor());
 
     }
 
@@ -61,10 +61,10 @@ public class BookMapperTest {
 
         BookTypes.Book protoBook = BookMapper.mapper.toProtoEntity(defaultBook);
 
-        Assertions.assertNotNull(protoBook);
-        Assertions.assertEquals(protoBook.getTitle(), defaultBook.getTitle());
-        Assertions.assertEquals(protoBook.getAuthor(), defaultBook.getAuthor());
-        Assertions.assertEquals(protoBook.getIsbn(), defaultBook.getIsbn());
+        assertNotNull(protoBook);
+        assertEquals(protoBook.getTitle(), defaultBook.getTitle());
+        assertEquals(protoBook.getAuthor(), defaultBook.getAuthor());
+        assertEquals(protoBook.getIsbn(), defaultBook.getIsbn());
 
     }
 
@@ -81,10 +81,10 @@ public class BookMapperTest {
 
         BookDto dto = BookMapper.mapper.toDtoFromProto(protoDto);
 
-        Assertions.assertNotNull(protoDto);
-        Assertions.assertEquals(dto.getTitle(), protoDto.getTitle());
-        Assertions.assertEquals(dto.getAuthor(), protoDto.getAuthor());
-        Assertions.assertEquals(dto.getIsbn(), protoDto.getIsbn());
+        assertNotNull(protoDto);
+        assertEquals(dto.getTitle(), protoDto.getTitle());
+        assertEquals(dto.getAuthor(), protoDto.getAuthor());
+        assertEquals(dto.getIsbn(), protoDto.getIsbn());
 
     }
 

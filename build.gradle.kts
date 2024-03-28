@@ -61,7 +61,6 @@ repositories {
 }
 
 dependencies {
-	implementation("org.apache.commons:commons-lang3:${Versions.lang3}")
 
 	//MAPSTRUCT DEPENDENCIES
 	implementation("org.mapstruct:mapstruct:${Versions.mapstruct}")
@@ -82,6 +81,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
+	testImplementation("org.testcontainers:r2dbc")
+	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.grpc:grpc-testing:${Versions.grpc}")
 
 	//DATABASE DEPENDENCIES
@@ -92,11 +93,16 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
 
+	//WEBFLUX DEPENDENCIES
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
-	testImplementation("io.projectreactor:reactor-test")
 
+	//LOMBOK DEPENDENCIES
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+
+	//OTHER DEPENDENCIES
+	implementation("org.apache.commons:commons-lang3:${Versions.lang3}")
+
 }
 
 tasks.withType<Test> {
