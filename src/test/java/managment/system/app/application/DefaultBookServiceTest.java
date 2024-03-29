@@ -1,7 +1,7 @@
 package managment.system.app.application;
 
 import com.google.protobuf.Empty;
-import managment.system.app.application.port.BookRepository;
+import managment.system.app.application.ports.BookRepository;
 import managment.system.app.domain.Book;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

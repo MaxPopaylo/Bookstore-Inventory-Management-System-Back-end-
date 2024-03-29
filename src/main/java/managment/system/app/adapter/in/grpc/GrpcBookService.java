@@ -1,4 +1,4 @@
-package managment.system.app.adapter.in.web.grpc;
+package managment.system.app.adapter.in.grpc;
 
 import app.grpc.book.ReactorBookServiceGrpc;
 import app.grpc.book_types.BookTypes;

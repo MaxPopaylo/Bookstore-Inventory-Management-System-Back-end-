@@ -1,7 +1,7 @@
-package managment.system.app.application.port;
+package managment.system.app.application.ports;
 
 import io.grpc.StatusRuntimeException;
-import managment.system.app.domain.exception.*;
+import managment.system.app.domain.exceptions.*;
 
 public interface BookExceptionHandler {
 

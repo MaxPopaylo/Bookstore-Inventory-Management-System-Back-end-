@@ -1,4 +1,4 @@
-package managment.system.app.application.port;
+package managment.system.app.application.ports;
 
 import com.google.protobuf.Empty;
 import managment.system.app.domain.Book;

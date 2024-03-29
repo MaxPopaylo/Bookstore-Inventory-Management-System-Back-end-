@@ -3,7 +3,7 @@ package managment.system.app.adapter.out.r2dbc;
 
 import com.google.protobuf.Empty;
 import lombok.RequiredArgsConstructor;
-import managment.system.app.application.port.BookRepository;
+import managment.system.app.application.ports.BookRepository;
 import managment.system.app.domain.Book;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

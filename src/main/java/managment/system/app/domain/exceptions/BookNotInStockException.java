@@ -1,4 +1,4 @@
-package managment.system.app.domain.exception;
+package managment.system.app.domain.exceptions;
 
 public class BookNotInStockException extends RuntimeException {
     public BookNotInStockException(int availableQuantity) {

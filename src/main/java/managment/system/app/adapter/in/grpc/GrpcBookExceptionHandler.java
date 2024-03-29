@@ -1,12 +1,12 @@
-package managment.system.app.adapter.in.web.grpc;
+package managment.system.app.adapter.in.grpc;
 
 
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
-import managment.system.app.application.port.BookExceptionHandler;
-import managment.system.app.domain.exception.*;
+import managment.system.app.application.ports.BookExceptionHandler;
+import managment.system.app.domain.exceptions.*;
 import net.devh.boot.grpc.server.advice.GrpcAdvice;
 import net.devh.boot.grpc.server.advice.GrpcExceptionHandler;
 

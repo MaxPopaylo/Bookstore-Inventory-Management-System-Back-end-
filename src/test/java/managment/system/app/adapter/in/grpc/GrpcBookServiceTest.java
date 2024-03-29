@@ -1,4 +1,4 @@
-package managment.system.app.adapter.in.web.grpc;
+package managment.system.app.adapter.in.grpc;
 
 import app.grpc.book.ReactorBookServiceGrpc;
 import app.grpc.book_types.BookTypes;
@@ -9,7 +9,7 @@ import managment.system.app.application.BookDto;
 import managment.system.app.application.BookService;
 import managment.system.app.configuration.AbstractTestcontainersIntegrationTest;
 import managment.system.app.domain.Book;
-import managment.system.app.domain.exception.BookNotFoundException;
+import managment.system.app.domain.exceptions.BookNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
