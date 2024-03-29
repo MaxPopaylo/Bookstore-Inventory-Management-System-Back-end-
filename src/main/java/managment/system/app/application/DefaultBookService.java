@@ -1,53 +1,47 @@
-package managment.system.app.dao;
+package managment.system.app.application;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import com.google.protobuf.Empty;
 import lombok.RequiredArgsConstructor;
-import managment.system.app.dto.BookDto;
-import managment.system.app.entity.Book;
-import managment.system.app.mapper.BookMapper;
-import managment.system.app.reporitory.BookRepository;
-import managment.system.app.utils.exceptions.BookNotFoundException;
-import managment.system.app.utils.exceptions.BookNotInStockException;
-import managment.system.app.utils.exceptions.BookNotSavedException;
+import managment.system.app.application.port.BookRepository;
+import managment.system.app.domain.Book;
+import managment.system.app.domain.exception.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class BookDao {
+public class DefaultBookService implements BookService {
 
     private final BookRepository repository;
 
+    @Override
     public Flux<Book> getAll() {
         return repository.findAll();
     }
 
+    @Override
     public Mono<Book> getById(UUID id) {
         return repository.findById(id)
                 .switchIfEmpty(Mono.error(new BookNotFoundException()));
     }
 
-    @Transactional
+    @Override
     public Mono<Book> save(BookDto dto) {
         return saveEntityIntoDb(BookMapper.mapper.toEntity(dto));
     }
 
-    @Transactional
+    @Override
     public Mono<Empty> delete(UUID id) {
         return getById(id)
                 .flatMap(repository::delete)
                 .then(Mono.just(Empty.getDefaultInstance()));
     }
 
-    @Transactional
+    @Override
     public Mono<Book> update(UUID id, BookDto dto) {
         return getById(id)
                 .flatMap(val ->{
@@ -59,7 +53,7 @@ public class BookDao {
                 });
     }
 
-    @Transactional
+    @Override
     public Mono<Book> sell(UUID id, int quantity) {
         return getById(id)
                 .flatMap(val -> {
@@ -70,7 +64,7 @@ public class BookDao {
                 });
     }
 
-    @Transactional
+    @Override
     public Mono<Book> receive(UUID id, int quantity) {
         return getById(id)
                 .flatMap(val -> {
@@ -79,11 +73,9 @@ public class BookDao {
                 });
     }
 
-
-    @Transactional
     protected Mono<Book> saveEntityIntoDb(Book entity) {
-       return repository.save(entity)
-               .switchIfEmpty(Mono.error(new BookNotSavedException()));
+        return repository.save(entity)
+                .switchIfEmpty(Mono.error(new BookNotSavedException()));
     }
 
 }

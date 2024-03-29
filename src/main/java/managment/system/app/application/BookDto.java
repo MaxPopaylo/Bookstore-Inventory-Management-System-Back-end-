@@ -1,4 +1,4 @@
-package managment.system.app.dto;
+package managment.system.app.application;
 
 import lombok.Data;
 

@@ -1,19 +1,19 @@
-package managment.system.app.utils;
+package managment.system.app.adapter.in.web.grpc;
 
 
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
-import managment.system.app.utils.exceptions.BookNotFoundException;
-import managment.system.app.utils.exceptions.BookNotInStockException;
-import managment.system.app.utils.exceptions.BookNotSavedException;
+import managment.system.app.application.port.BookExceptionHandler;
+import managment.system.app.domain.exception.*;
 import net.devh.boot.grpc.server.advice.GrpcAdvice;
 import net.devh.boot.grpc.server.advice.GrpcExceptionHandler;
 
 @GrpcAdvice
-public class BookExceptionHandler {
+public class GrpcBookExceptionHandler implements BookExceptionHandler {
 
+    @Override
     @GrpcExceptionHandler(BookNotFoundException.class)
     public StatusRuntimeException handleValidationError(BookNotFoundException cause) {
 
@@ -25,6 +25,7 @@ public class BookExceptionHandler {
         return StatusProto.toStatusRuntimeException(status);
     }
 
+    @Override
     @GrpcExceptionHandler(BookNotSavedException.class)
     public StatusRuntimeException handleValidationError(BookNotSavedException cause) {
 
@@ -36,6 +37,7 @@ public class BookExceptionHandler {
         return StatusProto.toStatusRuntimeException(status);
     }
 
+    @Override
     @GrpcExceptionHandler(BookNotInStockException.class)
     public StatusRuntimeException handleValidationError(BookNotInStockException cause) {
 

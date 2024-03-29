@@ -1,19 +1,18 @@
-package managment.system.app.entity;
-
+package managment.system.app.adapter.out.r2dbc;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
-
 @Data
 @NoArgsConstructor
 @Table(name = "books")
-public class Book {
+public class BookDbo {
 
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Id
@@ -23,6 +22,5 @@ public class Book {
     private String author;
     private String isbn;
     private Integer quantity;
-
 
 }

@@ -1,11 +1,10 @@
-package managment.system.app.service;
+package managment.system.app.adapter.in.web.grpc;
 
 import app.grpc.book.ReactorBookServiceGrpc;
 import app.grpc.book_types.BookTypes;
 import com.google.protobuf.Empty;
 import lombok.RequiredArgsConstructor;
-import managment.system.app.dao.BookDao;
-import managment.system.app.mapper.BookMapper;
+import managment.system.app.application.BookService;
 import net.devh.boot.grpc.server.service.GrpcService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,23 +13,23 @@ import java.util.UUID;
 
 @GrpcService
 @RequiredArgsConstructor
-public class BookGrpcService extends ReactorBookServiceGrpc.BookServiceImplBase {
+public class GrpcBookService extends ReactorBookServiceGrpc.BookServiceImplBase {
 
-    private final BookDao dao;
+    private final BookService service;
 
     @Override
     public Flux<BookTypes.Book> getAll(Empty request) {
-        return dao.getAll()
-                .map(BookMapper.mapper::toProtoEntity);
+        return service.getAll()
+                .map(GrpcBookMapper.mapper::toProtoEntity);
     }
 
     @Override
     public Mono<BookTypes.getByIdResponse> getById(Mono<BookTypes.getByIdRequest> request) {
         return request
                 .flatMap(req ->
-                        dao.getById(convertToUUID(req.getId())))
+                        service.getById(convertToUUID(req.getId())))
                 .map(val -> BookTypes.getByIdResponse.newBuilder()
-                        .setBook(BookMapper.mapper.toProtoEntity(val))
+                        .setBook(GrpcBookMapper.mapper.toProtoEntity(val))
                         .build());
     }
 
@@ -38,9 +37,9 @@ public class BookGrpcService extends ReactorBookServiceGrpc.BookServiceImplBase 
     public Mono<BookTypes.saveResponse> save(Mono<BookTypes.saveRequest> request) {
         return request
                 .flatMap(req ->
-                        dao.save(BookMapper.mapper.toDtoFromProto(req.getDto())))
+                        service.save(GrpcBookMapper.mapper.toDtoFromProto(req.getDto())))
                 .map(val -> BookTypes.saveResponse.newBuilder()
-                        .setBook(BookMapper.mapper.toProtoEntity(val))
+                        .setBook(GrpcBookMapper.mapper.toProtoEntity(val))
                         .build());
 
     }
@@ -49,16 +48,16 @@ public class BookGrpcService extends ReactorBookServiceGrpc.BookServiceImplBase 
     public Mono<Empty> delete(Mono<BookTypes.deleteRequest> request) {
         return request
                 .flatMap(req ->
-                        dao.delete(convertToUUID(req.getId())));
+                        service.delete(convertToUUID(req.getId())));
     }
 
     @Override
     public Mono<BookTypes.updateResponse> update(Mono<BookTypes.updateRequest> request) {
         return request
                 .flatMap(req ->
-                        dao.update(convertToUUID(req.getId()), BookMapper.mapper.toDtoFromProto(req.getDto())))
+                        service.update(convertToUUID(req.getId()), GrpcBookMapper.mapper.toDtoFromProto(req.getDto())))
                 .map(val -> BookTypes.updateResponse.newBuilder()
-                        .setBook(BookMapper.mapper.toProtoEntity(val))
+                        .setBook(GrpcBookMapper.mapper.toProtoEntity(val))
                         .build());
 
     }
@@ -67,7 +66,7 @@ public class BookGrpcService extends ReactorBookServiceGrpc.BookServiceImplBase 
     public Mono<BookTypes.sellResponse> sell(Mono<BookTypes.sellRequest> request) {
         return request
                 .flatMap(req ->
-                        dao.sell(convertToUUID(req.getId()), req.getQuantity()))
+                        service.sell(convertToUUID(req.getId()), req.getQuantity()))
                 .map(val -> BookTypes.sellResponse.newBuilder()
                         .setQuantity(val.getQuantity())
                         .build());
@@ -77,7 +76,7 @@ public class BookGrpcService extends ReactorBookServiceGrpc.BookServiceImplBase 
     public Mono<BookTypes.receiveResponse> receive(Mono<BookTypes.receiveRequest> request) {
         return request
                 .flatMap(req ->
-                        dao.receive(convertToUUID(req.getId()), req.getQuantity()))
+                        service.receive(convertToUUID(req.getId()), req.getQuantity()))
                 .map(val -> BookTypes.receiveResponse.newBuilder()
                         .setQuantity(val.getQuantity())
                         .build());
