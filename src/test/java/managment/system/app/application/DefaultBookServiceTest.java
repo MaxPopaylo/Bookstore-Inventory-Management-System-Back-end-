@@ -1,10 +1,12 @@
-package managment.system.app.dao;
+package managment.system.app.application;
 
 import com.google.protobuf.Empty;
-import managment.system.app.dto.BookDto;
-import managment.system.app.entity.Book;
-import managment.system.app.reporitory.BookRepository;
-import org.junit.jupiter.api.*;
+import managment.system.app.application.port.BookRepository;
+import managment.system.app.domain.Book;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -16,15 +18,16 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @Tag("unit")
-public class BookDaoTest {
+public class DefaultBookServiceTest {
 
     @Mock
     public BookRepository repository;
 
     @InjectMocks
-    public BookDao dao;
+    public DefaultBookService service;
 
     @BeforeEach
     public void setup() {
@@ -55,11 +58,11 @@ public class BookDaoTest {
 
         when(repository.findAll()).thenReturn(Flux.just(defaultBook, defaultBook));
 
-        StepVerifier.create(dao.getAll())
+        StepVerifier.create(service.getAll())
                 .expectNextCount(1)
                 .expectNextMatches(book ->
                         book.getId().equals(defaultBook.getId()) &&
-                        book.getTitle().equals(defaultBook.getTitle()))
+                                book.getTitle().equals(defaultBook.getTitle()))
                 .expectComplete()
                 .verify();
 
@@ -71,10 +74,10 @@ public class BookDaoTest {
 
         when(repository.findById(bookUUID)).thenReturn(Mono.just(defaultBook));
 
-        StepVerifier.create(dao.getById(bookUUID))
+        StepVerifier.create(service.getById(bookUUID))
                 .expectNextMatches(book ->
                         book.getId().equals(defaultBook.getId()) &&
-                        book.getTitle().equals(defaultBook.getTitle()))
+                                book.getTitle().equals(defaultBook.getTitle()))
                 .expectComplete()
                 .verify();
 
@@ -86,10 +89,10 @@ public class BookDaoTest {
 
         when(repository.save(any(Book.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
-        StepVerifier.create(dao.save(defaultDto))
+        StepVerifier.create(service.save(defaultDto))
                 .expectNextMatches(book ->
                         book.getTitle().equals(defaultBook.getTitle()) &&
-                        book.getAuthor().equals(defaultBook.getAuthor()))
+                                book.getAuthor().equals(defaultBook.getAuthor()))
                 .expectComplete()
                 .verify();
 
@@ -104,7 +107,7 @@ public class BookDaoTest {
         when(repository.findById(bookUUID)).thenReturn(Mono.just(defaultBook));
         when(repository.delete(any(Book.class))).thenReturn(Mono.empty());
 
-        StepVerifier.create(dao.delete(bookUUID))
+        StepVerifier.create(service.delete(bookUUID))
                 .expectNextMatches(response -> response.equals(Empty.getDefaultInstance()))
                 .expectComplete()
                 .verify();
@@ -125,10 +128,10 @@ public class BookDaoTest {
         when(repository.save(any(Book.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
 
-        StepVerifier.create(dao.update(bookUUID, dto))
+        StepVerifier.create(service.update(bookUUID, dto))
                 .expectNextMatches(book ->
                         book.getTitle().equals(dto.getTitle()) &&
-                        book.getAuthor().equals(dto.getAuthor()))
+                                book.getAuthor().equals(dto.getAuthor()))
                 .expectComplete()
                 .verify();
 
@@ -144,7 +147,7 @@ public class BookDaoTest {
 
         int oldQuantity = defaultBook.getQuantity();
 
-        StepVerifier.create(dao.sell(bookUUID, 2))
+        StepVerifier.create(service.sell(bookUUID, 2))
                 .expectNextMatches(book ->
                         book.getQuantity().equals(oldQuantity - 2))
                 .expectComplete()
@@ -163,7 +166,7 @@ public class BookDaoTest {
 
         int oldQuantity = defaultBook.getQuantity();
 
-        StepVerifier.create(dao.receive(bookUUID, 2))
+        StepVerifier.create(service.receive(bookUUID, 2))
                 .expectNextMatches(book ->
                         book.getQuantity().equals(oldQuantity + 2))
                 .expectComplete()
@@ -171,5 +174,5 @@ public class BookDaoTest {
 
         verify(repository, times(1)).save(any(Book.class));
     }
-
+    
 }

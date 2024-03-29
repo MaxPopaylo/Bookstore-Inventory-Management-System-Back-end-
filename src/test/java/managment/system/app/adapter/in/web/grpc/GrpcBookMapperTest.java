@@ -1,8 +1,9 @@
-package managment.system.app.mapper;
+package managment.system.app.adapter.in.web.grpc;
+
 
 import app.grpc.book_types.BookTypes;
-import managment.system.app.dto.BookDto;
-import managment.system.app.entity.Book;
+import managment.system.app.application.BookDto;
+import managment.system.app.domain.Book;
 import org.junit.jupiter.api.*;
 
 import java.util.UUID;
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Tag("unit")
-public class BookMapperTest {
+public class GrpcBookMapperTest {
 
     private final Book defaultBook = new Book();
     private final BookDto defaultDto = new BookDto();
@@ -30,35 +31,12 @@ public class BookMapperTest {
         defaultDto.setQuantity(5);
     }
 
-    @Test
-    @DisplayName("Junit test for mapping Book into BookDto")
-    void shouldProperlyMapEntityToDto() {
-
-        BookDto dto = BookMapper.mapper.toDto(defaultBook);
-
-        assertNotNull(dto);
-        assertEquals(dto.getTitle(), defaultBook.getTitle());
-        assertEquals(dto.getAuthor(), defaultBook.getAuthor());
-
-    }
-
-    @Test
-    @DisplayName("Junit test for mapping BookDto into Book")
-    void shouldProperlyMapDtoToEntity() {
-
-        Book book = BookMapper.mapper.toEntity(defaultDto);
-
-        assertNotNull(book);
-        assertEquals(book.getTitle(), defaultDto.getTitle());
-        assertEquals(book.getAuthor(), defaultDto.getAuthor());
-
-    }
 
     @Test
     @DisplayName("Junit test for mapping Book into BookTypes.Book")
     void shouldProperlyMapEntityToProtoEntity() {
 
-        BookTypes.Book protoBook = BookMapper.mapper.toProtoEntity(defaultBook);
+        BookTypes.Book protoBook = GrpcBookMapper.mapper.toProtoEntity(defaultBook);
 
         assertNotNull(protoBook);
         assertEquals(protoBook.getTitle(), defaultBook.getTitle());
@@ -78,7 +56,7 @@ public class BookMapperTest {
                 .setQuantity(defaultDto.getQuantity())
                 .build();
 
-        BookDto dto = BookMapper.mapper.toDtoFromProto(protoDto);
+        BookDto dto = GrpcBookMapper.mapper.toDtoFromProto(protoDto);
 
         assertNotNull(protoDto);
         assertEquals(dto.getTitle(), protoDto.getTitle());

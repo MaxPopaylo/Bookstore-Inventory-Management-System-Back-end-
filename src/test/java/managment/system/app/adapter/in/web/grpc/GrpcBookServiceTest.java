@@ -1,16 +1,15 @@
-package managment.system.app.service;
-
+package managment.system.app.adapter.in.web.grpc;
 
 import app.grpc.book.ReactorBookServiceGrpc;
 import app.grpc.book_types.BookTypes;
 import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import managment.system.app.application.BookDto;
+import managment.system.app.application.BookService;
 import managment.system.app.configuration.AbstractTestcontainersIntegrationTest;
-import managment.system.app.dao.BookDao;
-import managment.system.app.dto.BookDto;
-import managment.system.app.entity.Book;
-import managment.system.app.utils.exceptions.BookNotFoundException;
+import managment.system.app.domain.Book;
+import managment.system.app.domain.exception.BookNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,14 +21,15 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-//@Testcontainers
+
 @SpringBootTest
+
 @Tag("integration")
-public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
+public class GrpcBookServiceTest extends AbstractTestcontainersIntegrationTest {
 
     //INITIALISE DB SERVICE
     @Autowired
-    private BookDao dao;
+    private BookService service;
 
     //INITIALISE GRPC VARIABLES
     private final ManagedChannel channel = ManagedChannelBuilder
@@ -54,24 +54,8 @@ public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
         defaultDto.setQuantity(5);
 
 
-        defaultBook = dao.save(defaultDto).block();
+        defaultBook = service.save(defaultDto).block();
         id = Objects.requireNonNull(defaultBook).getId();
-    }
-
-    @Test
-    @DisplayName("Integration test for getting all books from grpc server")
-    void shouldProperlyGetAllBooks() {
-
-        BookTypes.getByIdRequest request = BookTypes.getByIdRequest.newBuilder()
-                .setId(convertToProtoUUID(id))
-                .build();
-
-
-        StepVerifier
-                .create(stub.getById(request))
-                .assertNext(Assertions::assertNotNull)
-                .verifyComplete();
-
     }
 
     @Test
@@ -111,7 +95,7 @@ public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
                 .create(stub.save(request))
                 .assertNext(response ->
                         StepVerifier
-                                .create(dao.getById(convertToUUID(response.getBook().getId())))
+                                .create(service.getById(convertToUUID(response.getBook().getId())))
                                 .assertNext(val -> {
                                     assertNotNull(val);
                                     assertEquals(val.getTitle(), dto.getTitle());
@@ -143,7 +127,7 @@ public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
                 .create(stub.update(request))
                 .assertNext(response ->
                         StepVerifier
-                                .create(dao.getById(convertToUUID(response.getBook().getId())))
+                                .create(service.getById(convertToUUID(response.getBook().getId())))
                                 .assertNext(val -> {
                                     assertNotNull(val);
                                     assertEquals(val.getTitle(), dto.getTitle());
@@ -196,6 +180,21 @@ public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
 
     }
 
+    @Test
+    @DisplayName("Integration test for getting all books from grpc server")
+    void shouldProperlyGetAllBooks() {
+
+        var responseBook = stub.getAll(Empty.newBuilder().build()).blockFirst();
+        Book book = service.getAll().blockFirst();
+
+        assert book != null;
+
+        assertNotNull(responseBook);
+        assertEquals(convertToUUID(responseBook.getId()), book.getId());
+        assertEquals(responseBook.getTitle(), book.getTitle());
+    }
+
+
 
     @Test
     @DisplayName("Integration  test for deleting book by id from grpc server")
@@ -212,7 +211,7 @@ public class BookGrpcServiceTest extends AbstractTestcontainersIntegrationTest {
 
 
         StepVerifier
-                .create(dao.getById(id))
+                .create(service.getById(id))
                 .expectError(BookNotFoundException.class)
                 .verify();
 
