@@ -13,6 +13,7 @@ import managment.system.app.domain.exceptions.BookNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import reactor.test.StepVerifier;
 
 import java.util.Objects;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 
+@DirtiesContext
 @Tag("integration")
 public class GrpcBookServiceTest extends AbstractTestcontainersIntegrationTest {
 

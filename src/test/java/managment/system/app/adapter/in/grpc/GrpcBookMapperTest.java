@@ -5,6 +5,7 @@ import app.grpc.book_types.BookTypes;
 import managment.system.app.application.BookDto;
 import managment.system.app.domain.Book;
 import org.junit.jupiter.api.*;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Tag("unit")
+@DirtiesContext
 public class GrpcBookMapperTest {
 
     private final Book defaultBook = new Book();

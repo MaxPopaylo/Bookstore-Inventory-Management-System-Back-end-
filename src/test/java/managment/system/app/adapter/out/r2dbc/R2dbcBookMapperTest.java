@@ -2,6 +2,7 @@ package managment.system.app.adapter.out.r2dbc;
 
 import managment.system.app.domain.Book;
 import org.junit.jupiter.api.*;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Tag("unit")
+@DirtiesContext
 public class R2dbcBookMapperTest {
 
     private final R2dbcBookMapper mapper = R2dbcBookMapper.mapper;

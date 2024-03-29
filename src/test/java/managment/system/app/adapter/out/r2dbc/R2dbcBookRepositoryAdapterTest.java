@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import managment.system.app.domain.Book;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
+import org.springframework.test.annotation.DirtiesContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -13,6 +14,7 @@ import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @Tag("unit")
+@DirtiesContext
 public class R2dbcBookRepositoryAdapterTest {
 
     @Mock
