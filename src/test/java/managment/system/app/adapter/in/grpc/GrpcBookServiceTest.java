@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 
-@DirtiesContext
 @Tag("integration")
+@DirtiesContext
 public class GrpcBookServiceTest extends AbstractTestcontainersIntegrationTest {
 
     //INITIALISE DB SERVICE
